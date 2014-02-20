@@ -76,6 +76,12 @@ module Hub
       res.error! unless res.success?
     end
 
+    def delete_repo project
+      res = delete "https://%s/repos/%s/%s" %
+        [api_host(project.host), project.owner, project.name]
+      res.error! unless res.success?
+    end
+
     def star_repo project
       res = put "https://%s/user/starred/%s/%s" %
         [api_host(project.host), project.owner, project.name]

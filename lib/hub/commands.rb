@@ -38,7 +38,7 @@ module Hub
     OWNER_RE = /[a-zA-Z0-9][a-zA-Z0-9-]*/
     NAME_WITH_OWNER_RE = /^(?:#{NAME_RE}|#{OWNER_RE}\/#{NAME_RE})$/
 
-    CUSTOM_COMMANDS = %w[alias create browse compare fork pull-request ci-status star unstar follow unfollow]
+    CUSTOM_COMMANDS = %w[alias create browse compare fork pull-request ci-status star unstar follow unfollow destroy]
 
     def run(args)
       slurp_global_flags(args)
@@ -576,6 +576,28 @@ module Hub
       exit 1
     end
 
+    # $ hub destroy [USER]/PROJECT
+    def destroy(args)
+      if args.length < 2
+        abort "Error: Not destroying current repository, please specify repo explicitly"
+      else
+        project = github_project args[1]
+      end
+
+      if not api_client.repo_exists? project
+        abort "#{project.owner}/#{project.name} does not exist"
+      end
+
+      print "Please type '#{project.owner}/#{project.name}' to confirm deletion: "
+      if $stdin.gets.chomp != "#{project.owner}/#{project.name}"
+        abort "Not deleting"
+      end
+
+      api_client.delete_repo(project) unless args.noop?
+
+      args.executable = 'echo'
+    end
+
     # $ hub star [USER/PROJECT]
     def star(args)
       if args.length < 2
@@ -985,6 +1007,7 @@ GitHub Commands:
    unstar         Unstar this repository on GitHub
    follow         Follow the owner of remote "origin" on GitHub
    unfollow       Unfollow the owner of remote "origin" on GitHub
+   destroy        Delete a given repository on GitHub
 
 See 'git help <command>' for more information on a specific command.
 help

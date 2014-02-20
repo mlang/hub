@@ -350,6 +350,11 @@ superpowers:
     $ git unfollow [user]
     > (unfollow owner of remote "origin" or specified user on GitHub)
 
+### git destroy
+
+    $ git destroy [user]/repo
+    > (destroy (delete) the given repository on GitHub)
+
 
 ### git help
 
